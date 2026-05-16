@@ -28,15 +28,16 @@
         
         <div class="imagen-destacada"></div>
 
-        <section class="seccion-botones">
-            <button id="btn-cartitas" class="boton-estandar">Nuestras Cartitas</button>
-            <button id="btn-musica" class="boton-estandar">Nuestra Música</button>
+        <section class="menu-opciones">
+            <button id="btn-cartitas" class="boton-estandar">💌 Nuestras Cartitas</button>
+            <button id="btn-musica" class="boton-estandar">🎵 Nuestra Playlist</button>
+            <button id="btn-datos" class="boton-estandar">🧠 Datos Curiosos</button>
         </section>
 
         <section class="seccion-calendario">
             <h2>Nuestro Almanaque</h2>
             
-            <button id="btn-whatsapp" class="boton-estandar boton-wa">Ir a nuestro WhatsApp 💬</button>
+            <button id="btn-whatsapp" class="boton-estandar boton-wa">🤖 Activar Alertas Mágicas</button>
             
             <div id="calendario-header">
                 <button id="btn-mes-anterior" class="btn-nav">&lt;</button>
@@ -52,6 +53,28 @@
             
             <div id="lista-eventos"></div>
         </section>
+    </div>
+
+    <div id="modal-cartitas" class="modal oculto">
+        <div class="modal-contenido modal-largo">
+            <span id="cerrar-cartitas" class="cerrar">&times;</span>
+            <h3 class="titulo-galeria">Nuestras Cartitas 💌</h3>
+            <p>Un viaje por nuestra historia...</p>
+            
+            <div class="grid-cartitas">
+                
+                <a href="URL_DE_TU_PDF_O_GITHUB_AQUI" target="_blank" class="carta-card">
+                    <img src="portada1.jpg" alt="Portada 1" class="carta-img">
+                    <div class="carta-titulo">Mes 1: El comienzo</div>
+                </a>
+
+                <a href="URL_DE_TU_OTRO_PDF_O_GITHUB" target="_blank" class="carta-card">
+                    <img src="portada2.jpg" alt="Portada 2" class="carta-img">
+                    <div class="carta-titulo">San Valentín 💖</div>
+                </a>
+
+            </div>
+        </div>
     </div>
 
     <div id="modal-evento" class="modal oculto">
