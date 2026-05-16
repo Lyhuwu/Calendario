@@ -1,222 +1,253 @@
-* {
+/* Configuraciones generales y fondo */
+body {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-    font-family: 'Quicksand', sans-serif;
-}
-
-html {
-    background-color: #111111; /* Esto mata los destellos blancos de los bordes */
-    overscroll-behavior-y: none; 
-    -webkit-tap-highlight-color: transparent; 
-}
-
-body {
-    /* ¡Sin colores aquí para no tapar tu fondo! */
-    color: #ffffff;
-    display: flex;
-    justify-content: center;
-    min-height: 100vh;
-    overflow-x: hidden; 
-    position: relative;
-}
-
-/* AQUÍ ESTÁ TU FONDO REAL, FIJO Y HERMOSO */
-.background-aesthetic {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1; 
-    pointer-events: none;
-    background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('fondo-sofi.jpg');
+    font-family: 'Poppins', sans-serif;
+    background-image: url("fondo-sofi.jpg"); 
     background-size: cover;
     background-position: center;
+    background-attachment: fixed;
+    color: #fff;
+    text-align: center;
+}
+
+/* --- ESTILOS DEL LOGIN --- */
+.login-container {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+.login-box {
+    background: rgba(30, 30, 30, 0.9);
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+    width: 85%; 
+    max-width: 350px;
+}
+.login-box input {
+    width: 90%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: none;
+    font-family: 'Poppins', sans-serif;
+}
+.error {
+    color: #ff69b4;
+    font-size: 0.9em;
+    margin-top: 15px;
+}
+
+.oculto {
+    display: none !important;
+}
+
+.contenedor-principal {
+    background-color: rgba(0, 0, 0, 0.6); 
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 15px;
+    max-width: 600px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+h2 {
+    font-size: 1.8em;
+    margin-bottom: 15px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+    padding-bottom: 5px;
 }
 
 .imagen-destacada {
-    position: absolute;
-    top: 20px;   
-    left: -10px;  
-    width: 180px; 
-    height: 180px;
-    background-image: url('pinguinos.gif'); 
-    background-size: contain; 
-    background-repeat: no-repeat;
+    width: 150px;
+    height: 150px;
+    margin: 20px auto;
+    background-image: url("pinguinos.gif"); 
+    background-size: cover;
     background-position: center;
-    filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.2)); 
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
 }
 
-.app-container {
-    width: 100%;
-    max-width: 400px; 
-    padding: 2rem 1.5rem;
-    z-index: 10; 
-    display: flex;
-    flex-direction: column;
-}
-
-header {
-    text-align: center;
-    margin-bottom: 3rem;
-}
-
-.titulo-elegante {
-    font-family: 'Allura', cursive;
-    font-size: 3.5rem;
-    color: #fff;
-    text-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
-}
-
-.subtitulo {
-    font-size: 0.95rem;
-    color: #eaeaea;
-    letter-spacing: 1px;
-}
-
-.menu-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.glass {
-    background: rgba(0, 0, 0, 0.4); 
-    backdrop-filter: blur(10px); 
-    -webkit-backdrop-filter: blur(10px);
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.1); 
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); 
-}
-
-.menu-card {
-    padding: 1.2rem;
-    text-decoration: none;
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    transition: 0.3s;
-}
-
-.icon-container {
-    width: 50px;
-    height: 50px;
-    background: rgba(255, 255, 255, 0.1); 
-    border-radius: 15px;
+.seccion-botones {
+    margin: 20px 0;
     display: flex;
     justify-content: center;
-    align-items: center;
-    font-size: 1.5rem;
-    color: #fff; 
-    margin-right: 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    gap: 15px;
 }
 
-#btn-curiosidades .icon-container {
-    background: rgba(255, 107, 129, 0.15);
-    color: #ff6b81;
-}
-
-.modal {
-    display: none; 
-    position: fixed;
-    z-index: 100;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
-    justify-content: center;
-    align-items: center;
-    padding: 1rem;
-}
-
-.modal-content {
-    width: 100%;
-    max-width: 360px;
+.boton-estandar {
+    background-color: #6a5acd;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    font-size: 1.1em;
     border-radius: 25px;
-    padding: 2.5rem 1rem 1.5rem 1rem; 
-    max-height: 85vh;
-    overflow-y: auto; 
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.cerrar-modal {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 1.8rem;
-    color: #aaa;
     cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-family: 'Poppins', sans-serif;
+}
+.boton-estandar:hover {
+    background-color: #483d8b;
+    transform: scale(1.05);
 }
 
-.titulo-modal { font-size: 2.8rem; margin-bottom: 2rem; text-align: center; }
-
-.glass-mini {
-    background: rgba(0, 0, 0, 0.25);
-    backdrop-filter: blur(5px);
-    border-radius: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+.boton-wa {
+    background-color: #25D366;
+    margin-bottom: 15px;
+}
+.boton-wa:hover {
+    background-color: #128C7E;
 }
 
-.tarjeta-enfocada {
-    background: rgba(255, 107, 129, 0.25) !important;
-    border-color: rgba(255, 107, 129, 0.5) !important;
-    box-shadow: 0 0 15px rgba(255, 107, 129, 0.4);
+/* --- CALENDARIO --- */
+#calendario-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+}
+.btn-nav {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    font-size: 1.5em;
+    cursor: pointer;
+    border-radius: 5px;
+    padding: 5px 15px;
+}
+.btn-nav:hover { background: rgba(255, 255, 255, 0.4); }
+#dias-semana {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    font-weight: bold;
+    margin-top: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 8px 0;
+    border-radius: 5px;
+}
+.grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin-top: 10px;
+}
+.dia {
+    padding: 15px 5px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+.dia:hover { background: rgba(255, 255, 255, 0.3); }
+.dia-actual {
+    border: 2px solid #fff;
+    background: rgba(106, 90, 205, 0.6);
+    font-weight: bold;
+}
+.dia-con-evento {
+    background: #ff69b4;
+    color: white;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px #000;
 }
 
-.secreto-item { margin-bottom: 1.2rem; padding: 1.2rem; }
-.secreto-pregunta { font-size: 1.05rem; color: #fff; font-weight: 600; cursor: pointer; }
-.secreto-respuesta { display: none; margin-top: 1rem; font-size: 0.9rem; color: #eee; border-top: 1px dashed rgba(255, 255, 255, 0.2); padding-top: 1rem; }
-
-.form-calendario {
+/* --- LISTA DE EVENTOS REDISEÑADA --- */
+#lista-eventos {
+    margin-top: 25px;
     display: flex;
     flex-direction: column;
     gap: 12px;
-    margin-bottom: 20px;
-    border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
-    padding-bottom: 20px;
 }
-
-.input-glass { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); padding: 12px; border-radius: 12px; color: #fff; }
-input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
-
-.btn-glass {
-    background: rgba(255, 107, 129, 0.2);
-    color: #ff6b81;
-    border: 1px solid rgba(255, 107, 129, 0.4);
-    padding: 12px;
-    border-radius: 12px;
-    font-weight: bold;
+.evento-item {
+    background: rgba(255, 255, 255, 0.1);
+    border-left: 5px solid #ff69b4;
+    padding: 15px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
 }
-
-.fecha-item strong { color: #ff6b81; font-size: 1.1rem; }
-.btn-eliminar { background: none; border: none; color: rgba(255, 255, 255, 0.5); cursor: pointer; }
-
-/* ALMANAQUE */
-#almanaque-visual { margin-bottom: 25px; padding: 12px 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); border-radius: 15px; }
-.almanaque-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; color: #fff; font-weight: bold; }
-.almanaque-header button { background: none; border: none; color: #ff6b81; font-size: 1.2rem; cursor: pointer; }
-.almanaque-semana { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; color: #ff6b81; font-size: 0.8rem; margin-bottom: 10px; }
-.almanaque-dias { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
-
-.dia-celda { color: #eee; padding: 6px 0; font-size: 0.88rem; border-radius: 50%; cursor: pointer; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; position: relative; }
-.dia-vacio { opacity: 0; }
-
-/* 🌟 DÍA ACTUAL: Anillo interior blanco elegante */
-.dia-actual {
-    font-weight: 700 !important;
-    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.7) !important;
+.evento-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
-
-.dia-con-evento { 
-    background: rgba(255, 107, 129, 0.3) !important; 
-    color: #ffb8c6 !important; 
-    font-weight: bold; 
-    border: 1px solid rgba(255, 107, 129, 0.6); 
-    box-shadow: 0 0 8px rgba(255, 107, 129, 0.4); 
+.evento-info { text-align: left; }
+.evento-info h4 {
+    margin: 0;
+    color: #ffb6c1; 
+    font-size: 1.1em;
 }
-.dia-seleccionado { background: #ff6b81 !important; color: #fff !important; box-shadow: 0 0 12px rgba(255, 107, 129, 0.6) !important; }
+.evento-info p {
+    margin: 5px 0 0 0;
+    font-size: 1em;
+    color: #fff;
+}
+.btn-eliminar-card {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.btn-eliminar-card:hover { transform: scale(1.2); }
+
+/* --- MODAL --- */
+.modal {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.modal-contenido {
+    background: #2c2c2c;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+.cerrar {
+    position: absolute;
+    top: 10px; right: 15px;
+    font-size: 1.5em;
+    cursor: pointer;
+    color: white;
+}
+textarea {
+    width: 90%;
+    height: 80px;
+    margin: 15px 0;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    font-family: 'Poppins', sans-serif;
+}
+.modal-botones {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+.btn-rojo { background-color: #ff4c4c; }
+.btn-rojo:hover { background-color: #cc0000; }
