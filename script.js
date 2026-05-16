@@ -4,7 +4,6 @@ const appPrincipal = document.getElementById("app-principal");
 const btnLogin = document.getElementById("btn-login");
 const loginError = document.getElementById("login-error");
 
-// Checar si ya iniciaron sesión antes para no pedírselos siempre
 if (localStorage.getItem("sesionIniciada") === "true") {
     pantallaLogin.classList.add("oculto");
     appPrincipal.classList.remove("oculto");
@@ -14,7 +13,6 @@ btnLogin.addEventListener("click", () => {
     const user = document.getElementById("login-user").value.trim();
     const pass = document.getElementById("login-pass").value.trim();
     
-    // Si escriben cualquier cosa, los dejamos pasar. Es un login simulado.
     if (user !== "" && pass !== "") { 
         localStorage.setItem("sesionIniciada", "true");
         localStorage.setItem("usuario", user);
@@ -25,7 +23,7 @@ btnLogin.addEventListener("click", () => {
     }
 });
 
-// --- CONFIGURACIÓN DE FIREBASE (Con tus llaves reales integradas) ---
+// --- CONFIGURACIÓN DE FIREBASE ---
 const firebaseConfig = {
     apiKey: "AIzaSyD_WiArRCE8_x7il5xaKCVkrHJo9mW6DT0",
     authDomain: "calendario-sofii.firebaseapp.com",
@@ -37,10 +35,9 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-
-// URL de tu bot en MacroDroid
 const URL_MI_BOT_PROPIO = "https://trigger.macrodroid.com/545af313-a7e7-4ca9-8a78-1072e5a07f97/alerta_sofi";
 
+// --- REFERENCIAS AL DOM ---
 const gridCalendario = document.getElementById("calendario-grid");
 const textoMesAnio = document.getElementById("mes-anio");
 const modalEvento = document.getElementById("modal-evento");
@@ -51,6 +48,37 @@ const btnEliminarEvento = document.getElementById("btn-eliminar-evento");
 const textoFechaSeleccionada = document.getElementById("fecha-seleccionada-texto");
 const listaEventos = document.getElementById('lista-eventos');
 
+// --- BOTONES DEL NUEVO MENÚ ---
+const modalCartitas = document.getElementById("modal-cartitas");
+
+// Botón: Nuestras Cartitas (Abre el modal)
+document.getElementById("btn-cartitas").addEventListener("click", () => {
+    modalCartitas.classList.remove("oculto");
+});
+document.getElementById("cerrar-cartitas").addEventListener("click", () => {
+    modalCartitas.classList.add("oculto");
+});
+
+// Botón: Playlist (Abre Spotify o YouTube)
+document.getElementById("btn-musica").addEventListener("click", () => {
+    // REEMPLAZA ESTE ENLACE POR EL DE TU PLAYLIST REAL
+    window.open("https://open.spotify.com/", "_blank");
+});
+
+// Botón: Datos Curiosos (Abre tu Kinopio)
+document.getElementById("btn-datos").addEventListener("click", () => {
+    // REEMPLAZA ESTE ENLACE POR EL DE TU KINOPIO O DOCUMENTO
+    window.open("https://kinopio.club/", "_blank");
+});
+
+// --- BOTÓN DE WHATSAPP (CONECTADO AL BOT) ---
+document.getElementById('btn-whatsapp').addEventListener('click', () => {
+    // Texto exacto para disparar la alerta mágica
+    const mensajeBot = encodeURIComponent("¡Hola! Quiero activar las alertas mágicas de nuestro rincón");
+    window.location.href = `https://api.whatsapp.com/send?phone=527341178986&text=${mensajeBot}`; 
+});
+
+// --- LÓGICA DEL CALENDARIO ---
 let mesActual = new Date().getMonth();
 let anioActual = new Date().getFullYear();
 let fechaEnFoco = "";
@@ -63,12 +91,6 @@ function enviarAlertaMagica(mensaje) {
     fetch(urlFinal).catch(error => console.error("Error de conexión:", error));
 }
 
-// Botón de WhatsApp con tu número real
-document.getElementById('btn-whatsapp').addEventListener('click', () => {
-    window.location.href = "https://api.whatsapp.com/send?phone=527341178986"; 
-});
-
-// Cargar eventos y construir la lista visual
 db.collection("eventosSofi").orderBy("fecha", "asc").onSnapshot((snapshot) => {
     eventosDB = {};
     listaEventos.innerHTML = "";
@@ -78,7 +100,6 @@ db.collection("eventosSofi").orderBy("fecha", "asc").onSnapshot((snapshot) => {
         const data = doc.data();
         eventosDB[data.fecha] = { id: doc.id, ...data };
         
-        // --- CREACIÓN DE LA TARJETA DEL EVENTO REDISEÑADA ---
         const divCard = document.createElement("div");
         divCard.className = "evento-item";
         divCard.innerHTML = `
@@ -89,11 +110,8 @@ db.collection("eventosSofi").orderBy("fecha", "asc").onSnapshot((snapshot) => {
             <button class="btn-eliminar-card" title="Borrar">🗑️</button>
         `;
 
-        // Navegar al mes del calendario al hacer clic en la tarjeta
         divCard.addEventListener('click', (e) => {
-            // Evitar que funcione si le picaron a la papelera
             if (e.target.closest('.btn-eliminar-card')) return;
-            
             const partes = data.fecha.split('-'); 
             anioActual = parseInt(partes[0]);
             mesActual = parseInt(partes[1]) - 1;
@@ -101,7 +119,6 @@ db.collection("eventosSofi").orderBy("fecha", "asc").onSnapshot((snapshot) => {
             document.querySelector('.seccion-calendario').scrollIntoView({ behavior: 'smooth' });
         });
 
-        // Funcionalidad del botón de papelera
         divCard.querySelector('.btn-eliminar-card').addEventListener('click', (e) => {
             e.stopPropagation();
             if(confirm("¿Segura que quieres borrar este recuerdo?")) {
