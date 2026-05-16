@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Sofi | Nuestro Rincón</title>
+    <link href="https://fonts.googleapis.com/css2?family=Allura&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+    <div class="background-aesthetic">
+        <div class="imagen-destacada"></div>
+        <div class="flores"></div>
+    </div>
+
+    <div class="app-container">
+        <header>
+            <h1 class="titulo-elegante">Para Sofi <span class="corazon">💖</span></h1>
+            <p class="subtitulo">Nuestro rincón privado</p>
+        </header>
+
+        <main class="menu-grid">
+            <a href="#" class="menu-card glass" target="_blank">
+                <div class="icon-container"><i class="fas fa-heart"></i></div>
+                <div class="card-text">
+                    <h2>Tus Cartitas</h2>
+                    <p>Todo lo que te he escrito</p>
+                </div>
+                <i class="fas fa-chevron-right arrow"></i>
+            </a>
+
+            <a href="#" class="menu-card glass" target="_blank">
+                <div class="icon-container"><i class="fas fa-headphones"></i></div>
+                <div class="card-text">
+                    <h2>Nuestra Playlist</h2>
+                    <p>Para escuchar juntos</p>
+                </div>
+                <i class="fas fa-chevron-right arrow"></i>
+            </a>
+
+            <div class="menu-card glass" id="btn-curiosidades">
+                <div class="icon-container"><i class="fas fa-magic"></i></div>
+                <div class="card-text">
+                    <h2>Detrás de las Cartitas</h2>
+                    <p>Secretos que no sabías</p>
+                </div>
+                <i class="fas fa-chevron-right arrow"></i>
+            </div>
+
+            <div class="menu-card glass" id="btn-calendario">
+                <div class="icon-container"><i class="fas fa-calendar-alt"></i></div>
+                <div class="card-text">
+                    <h2>Calendario</h2>
+                    <p>Nuestras fechas importantes</p>
+                </div>
+                <i class="fas fa-chevron-right arrow"></i>
+            </div>
+        </main>
+
+        <div class="collage-inferior">
+            <div class="foto-pareja glass"></div>
+        </div>
+    </div>
+
+    <div id="modal-curiosidades" class="modal">
+        <div class="modal-content glass">
+            <span class="cerrar-modal" id="cerrar-curiosidades">&times;</span>
+            <h2 class="titulo-modal titulo-elegante">Secretos Revelados 🤫</h2>
+            <div class="lista-secretos">
+                <div class="secreto-item glass-mini">
+                    <h3 class="secreto-pregunta">🌹 Sobre "La Vie en Rose"</h3>
+                    <p class="secreto-respuesta">La escuché por primera vez en una serie... y deseé con mucha emoción poder dedicársela algún día a la persona correcta. Y esa eres tú.</p>
+                </div>
+                <div class="secreto-item glass-mini">
+                    <h3 class="secreto-pregunta">🧸 El apodo</h3>
+                    <p class="secreto-respuesta">Siempre me hace sonreír cuando pienso en este apodo y en lo especial que te has vuelto para mí desde que empezamos a usarlo.</p>
+                </div>
+                <div class="secreto-item glass-mini">
+                    <h3 class="secreto-pregunta">🗓️ Felices meses</h3>
+                    <p class="secreto-respuesta">Llegar hasta aquí juntos ha sido increíble. Quería dejarte este espacio guardado para que siempre recuerdes lo mucho que me importas.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-calendario" class="modal">
+        <div class="modal-content glass">
+            <span class="cerrar-modal" id="cerrar-calendario">&times;</span>
+            <h2 class="titulo-modal titulo-elegante">Nuestras Fechas 🗓️</h2>
+            
+            <div id="almanaque-visual"></div>
+
+            <div id="modulo-bot" class="glass-mini" style="margin-bottom: 25px; padding: 15px; border: 1px solid rgba(255, 107, 129, 0.2); text-align: center;">
+                <p style="color: #fff; font-size: 0.9rem; margin-bottom: 10px; font-weight: 600;">✨ ¡Activa tu Asistente Virtual! ✨</p>
+                <a href="https://wa.me/527474194741?text=%C2%A1Hola!%20Quiero%20activar%20las%20alertas%20m%C3%A1gicas%20de%20nuestro%20rinc%C3%B3n%20%F0%9F%92%96" target="_blank" class="btn-glass" style="display: block; text-decoration: none; background: rgba(37, 211, 102, 0.2); color: #25d366; border: 1px solid rgba(37, 211, 102, 0.4); font-size: 0.85rem;">
+                    <i class="fab fa-whatsapp"></i> Iniciar Mayordomo 🧸
+                </a>
+            </div>
+
+            <div class="form-calendario">
+                <input type="date" id="fecha-input" class="input-glass">
+                <input type="text" id="desc-input" placeholder="¿Qué celebramos o qué haremos?" class="input-glass">
+                <button id="btn-guardar-fecha" class="btn-glass">Guardar Fecha</button>
+            </div>
+
+            <div id="lista-fechas" class="lista-secretos"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
