@@ -48,10 +48,9 @@ const btnEliminarEvento = document.getElementById("btn-eliminar-evento");
 const textoFechaSeleccionada = document.getElementById("fecha-seleccionada-texto");
 const listaEventos = document.getElementById('lista-eventos');
 
-// --- BOTONES DEL NUEVO MENÚ ---
+// --- BOTONES DEL MENÚ ---
 const modalCartitas = document.getElementById("modal-cartitas");
 
-// Botón: Nuestras Cartitas (Abre el modal)
 document.getElementById("btn-cartitas").addEventListener("click", () => {
     modalCartitas.classList.remove("oculto");
 });
@@ -59,23 +58,18 @@ document.getElementById("cerrar-cartitas").addEventListener("click", () => {
     modalCartitas.classList.add("oculto");
 });
 
-// Botón: Playlist (Abre Spotify o YouTube)
 document.getElementById("btn-musica").addEventListener("click", () => {
-    // REEMPLAZA ESTE ENLACE POR EL DE TU PLAYLIST REAL
     window.open("https://open.spotify.com/", "_blank");
 });
 
-// Botón: Datos Curiosos (Abre tu Kinopio)
 document.getElementById("btn-datos").addEventListener("click", () => {
-    // REEMPLAZA ESTE ENLACE POR EL DE TU KINOPIO O DOCUMENTO
     window.open("https://kinopio.club/", "_blank");
 });
 
-// --- BOTÓN DE WHATSAPP (CONECTADO AL BOT) ---
+// CORRECCIÓN 2: BOTÓN DE WHATSAPP CONECTADO DIRECTAMENTE AL NÚMERO DE TU BOT
 document.getElementById('btn-whatsapp').addEventListener('click', () => {
-    // Texto exacto para disparar la alerta mágica
     const mensajeBot = encodeURIComponent("¡Hola! Quiero activar las alertas mágicas de nuestro rincón");
-    window.location.href = `https://api.whatsapp.com/send?phone=527341178986&text=${mensajeBot}`; 
+    window.location.href = `https://wa.me/527474194741?text=${mensajeBot}`; 
 });
 
 // --- LÓGICA DEL CALENDARIO ---
