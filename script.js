@@ -1,4 +1,31 @@
-// 1. CONFIGURACIÓN DE FIREBASE
+// --- LÓGICA DEL INICIO DE SESIÓN ---
+const pantallaLogin = document.getElementById("pantalla-login");
+const appPrincipal = document.getElementById("app-principal");
+const btnLogin = document.getElementById("btn-login");
+const loginError = document.getElementById("login-error");
+
+// Checar si ya iniciaron sesión antes para no pedírselos siempre
+if (localStorage.getItem("sesionIniciada") === "true") {
+    pantallaLogin.classList.add("oculto");
+    appPrincipal.classList.remove("oculto");
+}
+
+btnLogin.addEventListener("click", () => {
+    const user = document.getElementById("login-user").value.trim();
+    const pass = document.getElementById("login-pass").value.trim();
+    
+    // Si escriben cualquier cosa, los dejamos pasar. Es un login simulado.
+    if (user !== "" && pass !== "") { 
+        localStorage.setItem("sesionIniciada", "true");
+        localStorage.setItem("usuario", user);
+        pantallaLogin.classList.add("oculto");
+        appPrincipal.classList.remove("oculto");
+    } else {
+        loginError.classList.remove("oculto");
+    }
+});
+
+// --- CONFIGURACIÓN DE FIREBASE (Con tus llaves reales integradas) ---
 const firebaseConfig = {
     apiKey: "AIzaSyD_WiArRCE8_x7il5xaKCVkrHJo9mW6DT0",
     authDomain: "calendario-sofii.firebaseapp.com",
@@ -11,154 +38,167 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// ✅ URL REAL DE TU MACRODROID
+// URL de tu bot en MacroDroid
 const URL_MI_BOT_PROPIO = "https://trigger.macrodroid.com/545af313-a7e7-4ca9-8a78-1072e5a07f97/alerta_sofi";
 
-let fechaActualAlmanaque = new Date();
-let listaFechasGuardadas = []; 
+const gridCalendario = document.getElementById("calendario-grid");
+const textoMesAnio = document.getElementById("mes-anio");
+const modalEvento = document.getElementById("modal-evento");
+const btnCerrarModal = document.getElementById("cerrar-modal");
+const inputTextoEvento = document.getElementById("texto-evento");
+const btnGuardarEvento = document.getElementById("btn-guardar-evento");
+const btnEliminarEvento = document.getElementById("btn-eliminar-evento");
+const textoFechaSeleccionada = document.getElementById("fecha-seleccionada-texto");
+const listaEventos = document.getElementById('lista-eventos');
 
-// 2. ELEMENTOS DE LA PÁGINA
-const modalCalendario = document.getElementById("modal-calendario");
-const btnCalendario = document.getElementById("btn-calendario");
-const cerrarCalendario = document.getElementById("cerrar-calendario");
-const btnGuardarFecha = document.getElementById("btn-guardar-fecha");
-const fechaInput = document.getElementById("fecha-input");
-const descInput = document.getElementById("desc-input");
-const listaFechas = document.getElementById("lista-fechas");
-const contenedorAlmanaque = document.getElementById("almanaque-visual");
+let mesActual = new Date().getMonth();
+let anioActual = new Date().getFullYear();
+let fechaEnFoco = "";
+let idEventoEnFoco = null;
+let eventosDB = {};
 
-const modalCuriosidades = document.getElementById("modal-curiosidades");
-document.getElementById("btn-curiosidades").onclick = () => modalCuriosidades.style.display = "flex";
-document.getElementById("cerrar-curiosidades").onclick = () => modalCuriosidades.style.display = "none";
+function enviarAlertaMagica(mensaje) {
+    const mensajeCodificado = encodeURIComponent(mensaje);
+    const urlFinal = `${URL_MI_BOT_PROPIO}?alerta_msg=${mensajeCodificado}`;
+    fetch(urlFinal).catch(error => console.error("Error de conexión:", error));
+}
 
-btnCalendario.onclick = () => { modalCalendario.style.display = "flex"; cargarFechas(); };
-cerrarCalendario.onclick = () => modalCalendario.style.display = "none";
+// Botón de WhatsApp con tu número real
+document.getElementById('btn-whatsapp').addEventListener('click', () => {
+    window.location.href = "https://api.whatsapp.com/send?phone=527341178986"; 
+});
 
-window.onclick = (event) => {
-    if (event.target == modalCuriosidades) modalCuriosidades.style.display = "none";
-    if (event.target == modalCalendario) modalCalendario.style.display = "none";
-};
+// Cargar eventos y construir la lista visual
+db.collection("eventosSofi").orderBy("fecha", "asc").onSnapshot((snapshot) => {
+    eventosDB = {};
+    listaEventos.innerHTML = "";
+    const hoyStr = new Date().toISOString().split('T')[0];
 
-// Acordeón de secretos
-document.querySelectorAll('.secreto-item').forEach(secreto => {
-    const pregunta = secreto.querySelector('.secreto-pregunta');
-    if(pregunta) {
-        pregunta.addEventListener('click', () => {
-            const respuesta = secreto.querySelector('.secreto-respuesta');
-            respuesta.style.display = (respuesta.style.display === "block") ? "none" : "block";
+    snapshot.forEach((doc) => {
+        const data = doc.data();
+        eventosDB[data.fecha] = { id: doc.id, ...data };
+        
+        // --- CREACIÓN DE LA TARJETA DEL EVENTO REDISEÑADA ---
+        const divCard = document.createElement("div");
+        divCard.className = "evento-item";
+        divCard.innerHTML = `
+            <div class="evento-info">
+                <h4>📅 ${data.fecha}</h4>
+                <p>✨ ${data.texto}</p>
+            </div>
+            <button class="btn-eliminar-card" title="Borrar">🗑️</button>
+        `;
+
+        // Navegar al mes del calendario al hacer clic en la tarjeta
+        divCard.addEventListener('click', (e) => {
+            // Evitar que funcione si le picaron a la papelera
+            if (e.target.closest('.btn-eliminar-card')) return;
+            
+            const partes = data.fecha.split('-'); 
+            anioActual = parseInt(partes[0]);
+            mesActual = parseInt(partes[1]) - 1;
+            dibujarCalendario();
+            document.querySelector('.seccion-calendario').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Funcionalidad del botón de papelera
+        divCard.querySelector('.btn-eliminar-card').addEventListener('click', (e) => {
+            e.stopPropagation();
+            if(confirm("¿Segura que quieres borrar este recuerdo?")) {
+                db.collection("eventosSofi").doc(doc.id).delete();
+            }
+        });
+
+        listaEventos.appendChild(divCard);
+
+        if (data.fecha === hoyStr && !data.avisado) {
+            enviarAlertaMagica(`¡Hoy es un día especial en nuestro rincón! 💙💜 ${data.texto}`);
+            db.collection("eventosSofi").doc(doc.id).update({ avisado: true });
+        }
+    });
+    
+    dibujarCalendario(); 
+});
+
+function dibujarCalendario() {
+    gridCalendario.innerHTML = "";
+    const primerDia = new Date(anioActual, mesActual, 1).getDay();
+    const diasEnMes = new Date(anioActual, mesActual + 1, 0).getDate();
+    const nombresMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+    
+    textoMesAnio.innerText = `${nombresMeses[mesActual]} ${anioActual}`;
+    
+    const hoy = new Date();
+    const strHoy = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
+    
+    for (let i = 0; i < primerDia; i++) {
+        gridCalendario.appendChild(document.createElement("div"));
+    }
+    
+    for (let dia = 1; dia <= diasEnMes; dia++) {
+        let divDia = document.createElement("div");
+        divDia.className = "dia";
+        divDia.innerText = dia;
+        
+        let fechaStr = `${anioActual}-${String(mesActual + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+        
+        if (fechaStr === strHoy) divDia.classList.add("dia-actual");
+        if (eventosDB[fechaStr]) divDia.classList.add("dia-con-evento");
+        
+        divDia.addEventListener("click", () => abrirModal(fechaStr));
+        gridCalendario.appendChild(divDia);
+    }
+}
+
+function abrirModal(fechaStr) {
+    fechaEnFoco = fechaStr;
+    textoFechaSeleccionada.innerText = `Evento para el: ${fechaStr}`;
+    
+    if (eventosDB[fechaStr]) {
+        inputTextoEvento.value = eventosDB[fechaStr].texto;
+        idEventoEnFoco = eventosDB[fechaStr].id;
+        btnEliminarEvento.classList.remove("oculto");
+    } else {
+        inputTextoEvento.value = "";
+        idEventoEnFoco = null;
+        btnEliminarEvento.classList.add("oculto");
+    }
+    modalEvento.classList.remove("oculto");
+}
+
+btnCerrarModal.addEventListener("click", () => modalEvento.classList.add("oculto"));
+
+document.getElementById("btn-mes-anterior").addEventListener("click", () => {
+    mesActual--; if (mesActual < 0) { mesActual = 11; anioActual--; }
+    dibujarCalendario();
+});
+
+document.getElementById("btn-mes-siguiente").addEventListener("click", () => {
+    mesActual++; if (mesActual > 11) { mesActual = 0; anioActual++; }
+    dibujarCalendario();
+});
+
+btnGuardarEvento.addEventListener("click", () => {
+    const texto = inputTextoEvento.value;
+    if (!texto) return alert("Por favor escribe algo para el evento.");
+    
+    const datosEvento = { fecha: fechaEnFoco, texto: texto, avisado: false };
+    
+    if (idEventoEnFoco) {
+        db.collection("eventosSofi").doc(idEventoEnFoco).update(datosEvento).then(() => modalEvento.classList.add("oculto"));
+    } else {
+        db.collection("eventosSofi").add(datosEvento).then(() => {
+            const hoyStr = new Date().toISOString().split('T')[0];
+            if (fechaEnFoco === hoyStr) {
+                enviarAlertaMagica(`¡Se guardó un evento para hoy! 💙💜 ${texto}`);
+            }
+            modalEvento.classList.add("oculto");
         });
     }
 });
 
-// 3. DIBUJAR ALMANAQUE NATIVO (MARCA EL DÍA ACTUAL Y LOS EVENTOS)
-function dibujarAlmanaque() {
-    const año = fechaActualAlmanaque.getFullYear();
-    const mes = fechaActualAlmanaque.getMonth();
-    const nombresMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-    const primerDiaIndex = new Date(año, mes, 1).getDay(); 
-    const totalDiasMes = new Date(año, mes + 1, 0).getDate();
-
-    // Obtener el día de hoy exacto del celular
-    const hoyObjeto = new Date();
-    const hoyAño = hoyObjeto.getFullYear();
-    const hoyMes = hoyObjeto.getMonth();
-    const hoyDia = hoyObjeto.getDate();
-
-    let html = `<div class="almanaque-header"><button id="ant-mes"><i class="fas fa-chevron-left"></i></button><span>${nombresMeses[mes]} ${año}</span><button id="sig-mes"><i class="fas fa-chevron-right"></i></button></div><div class="almanaque-semana"><div>Do</div><div>Lu</div><div>Ma</div><div>Mi</div><div>Ju</div><div>Vi</div><div>Sá</div></div><div class="almanaque-dias">`;
-
-    for (let i = 0; i < primerDiaIndex; i++) html += `<div class="dia-celda dia-vacio"></div>`;
-    
-    for (let dia = 1; dia <= totalDiasMes; dia++) {
-        const f = `${año}-${String(mes+1).padStart(2,'0')}-${String(dia).padStart(2,'0')}`;
-        
-        // Verifica si esta celda específica es el día de hoy
-        const esHoy = (año === hoyAño && mes === hoyMes && dia === hoyDia);
-        
-        const claseEvento = listaFechasGuardadas.includes(f) ? "dia-con-evento" : "";
-        const claseHoy = esHoy ? "dia-actual" : "";
-        
-        html += `<div class="dia-celda ${claseEvento} ${claseHoy}" data-fecha="${f}">${dia}</div>`;
+btnEliminarEvento.addEventListener("click", () => {
+    if (confirm("¿Segura que quieres borrar este recuerdo?")) {
+        db.collection("eventosSofi").doc(idEventoEnFoco).delete().then(() => modalEvento.classList.add("oculto"));
     }
-    html += `</div>`;
-    contenedorAlmanaque.innerHTML = html;
-
-    document.getElementById("ant-mes").onclick = () => { fechaActualAlmanaque.setMonth(fechaActualAlmanaque.getMonth() - 1); dibujarAlmanaque(); };
-    document.getElementById("sig-mes").onclick = () => { fechaActualAlmanaque.setMonth(fechaActualAlmanaque.getMonth() + 1); dibujarAlmanaque(); };
-
-    contenedorAlmanaque.querySelectorAll('.dia-celda:not(.dia-vacio)').forEach(celda => {
-        celda.onclick = () => {
-            const fecha = celda.getAttribute('data-fecha');
-            fechaInput.value = fecha;
-            if (celda.classList.contains('dia-con-evento')) {
-                const tarjeta = document.getElementById(`tarjeta-${fecha}`);
-                if(tarjeta) {
-                    tarjeta.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    tarjeta.classList.add('tarjeta-enfocada');
-                    setTimeout(() => tarjeta.classList.remove('tarjeta-enfocada'), 1500);
-                }
-            }
-        };
-    });
-}
-
-// --- LEER EVENTOS DESDE FIREBASE ---
-function cargarFechas() {
-    db.collection("fechas").get().then((querySnapshot) => {
-        listaFechas.innerHTML = ""; let notas = []; listaFechasGuardadas = []; 
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            notas.push({ id: doc.id, fecha: data.fecha, descripcion: data.descripcion });
-            listaFechasGuardadas.push(data.fecha); 
-        });
-        notas.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
-        notas.forEach((nota) => {
-            const div = document.createElement("div");
-            div.className = "secreto-item glass-mini fecha-item";
-            div.id = `tarjeta-${nota.fecha}`; 
-            div.innerHTML = `<div class="fecha-header"><strong>${nota.fecha}</strong><button class="btn-eliminar" onclick="eliminarFecha('${nota.id}')"><i class="fas fa-trash-alt"></i></button></div><p>${nota.descripcion}</p>`;
-            listaFechas.appendChild(div);
-        });
-        dibujarAlmanaque();
-        motorVerificacionPropio(notas); // Ejecuta el revisor de alertas
-    });
-}
-
-// --- 🔔 MOTOR INTELIGENTE: REVISA UN DÍA ANTES Y EL MERO DÍA ---
-function motorVerificacionPropio(listaFechas) {
-    const hoy = new Date();
-    const mañana = new Date();
-    mañana.setDate(hoy.getDate() + 1);
-
-    // Formatear las fechas locales en formato YYYY-MM-DD
-    const stringHoy = `${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}-${String(hoy.getDate()).padStart(2,'0')}`;
-    const stringMañana = `${mañana.getFullYear()}-${String(mañana.getMonth()+1).padStart(2,'0')}-${String(mañana.getDate()).padStart(2,'0')}`;
-
-    listaFechas.forEach((item) => {
-        let mensajeAlerta = "";
-        
-        if (item.fecha === stringHoy) {
-            mensajeAlerta = `¡Es hoy! 🎉 Hoy celebramos vuestra fecha especial: ${item.descripcion}. ¡Feliz día! 💕`;
-        } else if (item.fecha === stringMañana) {
-            mensajeAlerta = `¡Recuerdo tierno! 🌹 Mañana se cumple un momento muy especial: ${item.descripcion}. ¡Que no se te pase! 🥰`;
-        }
-
-        // Si coincide con hoy o con mañana, manda el silbido al celular
-        if (mensajeAlerta !== "") {
-            fetch(`${URL_MI_BOT_PROPIO}?alerta_msg=${encodeURIComponent(mensajeAlerta)}`, { mode: 'no-cors' })
-                .then(() => console.log("Alerta enviada para el evento de la fecha: " + item.fecha))
-                .catch(err => console.error("Error al enviar señal:", err));
-        }
-    });
-}
-
-// --- AGREGAR Y ELIMINAR FECHAS ---
-btnGuardarFecha.onclick = () => {
-    if (fechaInput.value === "" || descInput.value === "") { alert("Por favor llena ambos campos 😊"); return; }
-    db.collection("fechas").add({ fecha: fechaInput.value, descripcion: descInput.value }).then(() => {
-        fechaInput.value = ""; descInput.value = ""; cargarFechas();
-    });
-};
-
-function eliminarFecha(id) {
-    if (confirm("¿Borrar este recuerdo? 🥺")) { db.collection("fechas").doc(id).delete().then(() => cargarFechas()); }
-}
+});
